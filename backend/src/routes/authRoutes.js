@@ -1,4 +1,8 @@
-type nul > src/routes/test.js
-type nul > src/controllers/test.js
-type nul > src/middleware/test.js
-type nul > src/services/test.js
+const express = require('express');
+const router = express.Router();
+const { registerUser, loginUser } = require('../controllers/authController');
+
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+
+module.exports = router;
