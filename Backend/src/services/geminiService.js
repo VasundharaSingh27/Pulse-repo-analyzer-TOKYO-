@@ -7,12 +7,6 @@ const analyzeCommit = async (message, diff) => {
 Message: ${message}
 Diff: ${diff ? diff.substring(0, 2000) : 'None'}
 
-Return ONLY a JSON object with the following keys:
-- "classification": one of ["Feature", "Bug Fix", "Refactor", "Docs", "Chore", "Other"]
-- "impactScore": an integer from 1 to 100 based on the complexity and impact of the diff.
-- "summary": A short 1-sentence summary of what this code change achieves.
-
-Ensure the output is pure JSON without markdown backticks.`;
 
     const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
