@@ -1,7 +1,7 @@
 import { cn } from "../../lib/utils";
 import { motion } from "framer-motion";
 
-export const Card = ({ children, className, animate = false }) => {
+export const Card = ({ children, className, animate = false, ...props }) => {
   const base = "glass-panel p-6";
   
   if (animate) {
@@ -12,11 +12,12 @@ export const Card = ({ children, className, animate = false }) => {
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }} // Linear/Stripe style easing curve
         className={cn(base, className)}
+        {...props}
       >
         {children}
       </motion.div>
     );
   }
   
-  return <div className={cn(base, className)}>{children}</div>;
+  return <div className={cn(base, className)} {...props}>{children}</div>;
 };

@@ -451,7 +451,7 @@ export default function Dashboard() {
                   <div>
                     <h4 className="font-bold text-lg">{c.username}</h4>
                     <p className="text-sm text-muted-foreground">{c.totalCommits} total commits</p>
-                    <p className="text-xs text-muted-foreground mt-1 opacity-75">{c.username} made {c.totalCommits} commits to the project.</p>
+                    <p className="text-xs text-muted-foreground mt-1 opacity-75 leading-relaxed">{c.contributionSummary || `${c.username} is a contributor to this repository.`}</p>
                   </div>
                 </Card>
               ))}

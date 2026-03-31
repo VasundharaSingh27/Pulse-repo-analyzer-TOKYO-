@@ -57,6 +57,7 @@ const processRepoData = async (repo, owner, name) => {
 
     // Process Commits & run Gemini Analysis
     let commitInfoText = "";
+    const contributorMessages = {};
     
     // Process all commits, and run Gemini analysis on a subset
     const AI_ANALYSIS_LIMIT = 25; // Deep AI analysis limit to stay within free tier
@@ -66,7 +67,14 @@ const processRepoData = async (repo, owner, name) => {
        const sha = ghCommit.sha;
        const message = ghCommit.commit.message;
        const author = ghCommit.commit.author?.name || ghCommit.commit.committer?.name || "Unknown";
+       const login = ghCommit.author?.login || author;
        const date = ghCommit.commit.author?.date;
+
+       // Group commits for per-contributor AI summary
+       if (!contributorMessages[login]) contributorMessages[login] = "";
+       if (contributorMessages[login].split('\n').length < 15) {
+         contributorMessages[login] += `- ${message}\n`;
+       }
 
        // Save to text summary for repo-wide summary prompt
        if (i < 50) commitInfoText += `\n- ${author}: ${message}`;
@@ -105,6 +113,15 @@ const processRepoData = async (repo, owner, name) => {
            summary: aiAnalysis.summary
          },
          { upsert: true }
+       );
+    }
+
+    // Generate Contributor Summaries
+    for (const login in contributorMessages) {
+       const summary = await geminiService.summarizeContributor(login, contributorMessages[login]);
+       await Contributor.findOneAndUpdate(
+         { repoId: repo._id, username: login },
+         { contributionSummary: summary }
        );
     }
 
