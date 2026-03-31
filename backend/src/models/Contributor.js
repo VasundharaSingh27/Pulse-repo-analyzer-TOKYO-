@@ -25,6 +25,10 @@ const contributorSchema = new mongoose.Schema({
     type: String,
     enum: ['high-impact', 'low-impact', 'uneven', 'normal'],
     default: 'normal'
+  },
+  contributionSummary: {
+    type: String,
+    default: 'Analyzing contributions...'
   }
 }, {
   timestamps: true
