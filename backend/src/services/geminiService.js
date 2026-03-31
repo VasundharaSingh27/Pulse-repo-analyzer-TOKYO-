@@ -15,7 +15,7 @@ Return ONLY a JSON object with the following keys:
 Ensure the output is pure JSON without markdown backticks.`;
 
     const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.1-flash',
         contents: prompt
     });
     
@@ -38,12 +38,39 @@ const summarizeRepo = async (commitsInfo) => {
      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
      const prompt = `Based on the following recent commits, write a 2-3 sentence summary of the engineering focus of this repository: ${commitsInfo.substring(0, 3000)}`;
      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.1-flash-lite-preview',
         contents: prompt
      });
      return response.text;
   } catch (error) {
      return "Engineering summary unavailable.";
+  }
+};
+
+const summarizeContributor = async (username, commitsInfo) => {
+  try {
+     if (!commitsInfo || commitsInfo.trim().length < 5) return `${username} is a contributor to this repository.`;
+     
+     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+     const prompt = `Based on these commit messages for developer "${username}", write a 1-sentence professional summary of their main contributions and impact on this repository. Be specific about features or modules they worked on.
+     
+     Commits:
+     ${commitsInfo.substring(0, 2000)}
+     
+     Summary (1 sentence):`;
+     
+     const response = await ai.models.generateContent({
+        model: 'gemini-3.1-flash-lite-preview',
+        contents: prompt
+     });
+
+     if (response && response.text) {
+       return response.text.trim();
+     }
+     throw new Error('Empty AI response');
+  } catch (error) {
+     console.error(`Gemini Error for ${username}:`, error.message);
+     return `${username} contributed to the repository's codebase and development.`;
   }
 };
 
@@ -58,4 +85,4 @@ const heuristicAnalyze = (message) => {
   return 'Other';
 };
 
-module.exports = { analyzeCommit, summarizeRepo, heuristicAnalyze };
+module.exports = { analyzeCommit, summarizeRepo, summarizeContributor, heuristicAnalyze };
